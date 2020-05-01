@@ -35,25 +35,11 @@ HEADER = """
 DB_TYPE = getenv('db_type', 'REDIS')
 PY3 = sys.version_info >= (3,)
 
-if DB_TYPE == 'SSDB':
-    DB_HOST = getenv('ssdb_host', '127.0.0.1')
-    DB_PORT = getenv('ssdb_port', '8080')
-    DB_PASSWORD = getenv('ssdb_password', '')
-elif DB_TYPE == 'MONGODB':
-    DB_HOST = getenv('mongodb_host', '127.0.0.1')
-    DB_PORT = getenv('mongodb_host', 27017)
-    DB_PASSWORD = getenv('mongodb_password', '')
-elif DB_TYPE == 'REDIS':
-    DB_HOST = getenv('mongodb_host', '127.0.0.1')
-    DB_PORT = getenv('mongodb_host', 6379)
-    DB_PASSWORD = getenv('mongodb_password', '')
-else:
-    raise ConfigError('Unknown database type, your environment variable `db_type` should be one of SSDB/MONGODB.')
+DB_TYPE = getenv('db_type', 'REDIS').upper()
+DB_HOST = getenv('db_host', '127.0.0.1')
+DB_PORT = getenv('db_port', 6379)
+DB_PASSWORD = getenv('db_password', '')
 
-# DB_TYPE = getenv('db_type', 'SSDB').upper()
-# DB_HOST = getenv('db_host', '127.0.0.1')
-# DB_PORT = getenv('db_port', '8080')
-# DB_PASSWORD = getenv('db_password', '')
 
 """ 数据库配置 """
 DATABASES = {
@@ -70,14 +56,17 @@ DATABASES = {
 
 PROXY_GETTER = [
     "freeProxy01",
-    "freeProxy02",
+    # "freeProxy02",
     "freeProxy03",
     "freeProxy04",
     "freeProxy05",
-    "freeProxy06",
+    # "freeProxy06",
     "freeProxy07",
-    "freeProxy08",
+    # "freeProxy08",
     "freeProxy09",
+    "freeProxy13",
+    "freeProxy14",
+    "freeProxy14",
 ]
 
 """ API config http://127.0.0.1:5010 """
@@ -95,8 +84,8 @@ def checkConfig():
     if DB_TYPE not in ["SSDB", "REDIS"]:
         raise ConfigError('db_type Do not support: %s, must SSDB/REDIS .' % DB_TYPE)
 
-    if not DB_PORT.isdigit():
-        raise ConfigError('db_port must be digit, not %s' % DB_PORT)
+    if type(DB_PORT) == str and not DB_PORT.isdigit():
+        raise ConfigError('if db_port is string, it must be digit, not %s' % DB_PORT)
 
     from ProxyGetter import getFreeProxy
     illegal_getter = list(filter(lambda key: not hasattr(getFreeProxy.GetFreeProxy, key), PROXY_GETTER))
